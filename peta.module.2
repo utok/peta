@@ -1,0 +1,78 @@
+<?php
+
+
+function peta_menu() {
+	 $items = array();
+
+  $items['hello'] = array(
+    'title' => '',
+    'page callback' => 'helloworld_page',
+    'access arguments' => array('access content'),
+   'type' => MENU_CALLBACK
+    );
+
+
+
+  $items['hello/json'] = array(
+    'access callback'   => true,
+    'page callback' => 'ambildatabase',
+    'delivery callback' => 'drupal_json_output'
+  //  'access arguments' => array('access content'),
+  //  'type' => MENU_CALLBACK
+    );
+
+  return $items;
+}
+
+function ambildatabase(){
+include "sites/default/settings.php";
+
+	//koneksi ke database
+	$konek1 = mysql_connect($databases['default']['default']['host'],
+	$databases['default']['default']['username'],$databases['default']['default']['password']) or die("Koneksi gagal");
+	mysql_select_db($databases['default']['default']['database']) or die("Database tidak bisa dibuka");
+
+
+//$result =db_query('SELECT field_geolong_contoh FROM field_data_field_geolong',$field_geolong_contoh);//
+
+ $result =db_query('SELECT field_geolong_contoh FROM field_data_field_geolong')->fetchAll();
+//$row=mysql_fetch_array($result,$konek1);
+return $result;
+
+}
+
+function ambildb(){
+return "abcd";
+}
+
+
+function helloworld_page(){
+
+drupal_add_js('https://maps.googleapis.com/maps/api/js?v=3.exp', 'external');
+$hasilnya = "";
+
+$hasilnya .=   "<script>
+var map;
+function initialize() {
+  var mapOptions = {
+                                    zoom: 4,
+                                    mapTypeId: google.maps.MapTypeId.TERRAIN,
+                                    mapTypeControl: true,
+                                    mapTypeControlOptions: {
+                                    style: google.maps.MapTypeControlStyle.DROPDOWN_MENU},
+                                    zoomControl: true,
+                                    zoomControlOptions: {
+                                    style: google.maps.ZoomControlStyle.SMALL
+                                      },
+                                  center: new google.maps.LatLng(-2.6367266,118.0148634)
+                                  };
+  map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
+
+}
+
+google.maps.event.addDomListener(window, 'load', initialize);
+</script><div id='map-canvas' style='height:320px;margin: 0px;padding: 0px;'>";
+$hasilnya .= "</div>";
+
+return $hasilnya;
+}

@@ -1,0 +1,37 @@
+  function initialize() {
+        json = (function () {
+                                                      var json = null;
+                                                      $.ajax({
+                                                          'async': false,
+                                                          'global': false,
+                                                          'url': '/hello/json',
+                                                          'dataType': 'json',
+                                                          'success': function (a) {
+                                                          json = a; }
+                                                      });
+                                                      return json;
+                                          })();
+
+
+          var center = new google.maps.LatLng(-2.6367266,118.0148634);
+          var mapOptions = {
+                center: center,
+                zoom: 3,
+                mapTypeId: google.maps.MapTypeId.ROADMAP,
+             };
+        var map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
+
+
+        for (var i = 0, length = json.length; i < length; i++) {
+          a=json[i],
+          latlang = new google.maps.LatLng(Number(a.field_geolong_contoh));
+          var marker=new google.maps.Marker({
+                position:latlang,
+                icon: 'http://maps.google.com/mapfiles/ms/micons/red-dot.png',
+                map : map,
+                title : a.entity_id
+            });
+      marker.setMap(map);
+       }
+
+    }

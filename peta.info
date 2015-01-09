@@ -1,0 +1,5 @@
+name		    = peta
+description		= Peta Bung
+core		    = 7.x
+version 		= 7.x-1.0
+files[]		  	= peta.module

@@ -1,0 +1,108 @@
+<?php
+
+
+function peta_menu() {
+	 $items = array();
+
+  $items['hello'] = array(
+    'title' => '',
+    'page callback' => 'helloworld_page',
+    'access arguments' => array('access content'),
+   'type' => MENU_CALLBACK
+    );
+
+
+
+  $items['hello/json'] = array(
+    'access callback'   => true,
+    'page callback' => 'ambildatabase',
+    'delivery callback' => 'drupal_json_output',
+'access arguments' => array('access content'),
+   'type' => MENU_CALLBACK
+    );
+
+  return $items;
+}
+
+function ambildatabase(){
+include "sites/default/settings.php";
+
+	//koneksi ke database
+	$konek1 = mysql_connect($databases['default']['default']['host'],
+	$databases['default']['default']['username'],$databases['default']['default']['password']) or die("Koneksi gagal");
+	mysql_select_db($databases['default']['default']['database']) or die("Database tidak bisa dibuka");
+
+
+$result =db_query('SELECT entity_id, field_geolong_contoh FROM field_data_field_geolong')->fetchAll();//
+
+ //$result =db_query('SELECT a.entity_id,a.field_geolong_contoh,b.field_tittle_contoh FROM field_data_field_geolong a INNER JOIN field_data_field_tittle b ON a.entity_id=b.entity_id ')->fetchAll();
+//$row=mysql_fetch_array($result,$konek1);
+ mysql_close($konek1);
+return $result;
+
+}
+
+function ambildb(){
+return "abcd";
+}
+
+
+function helloworld_page(){
+
+drupal_add_js('http://maps.googleapis.com/maps/api/js?v=3.exp', 'external');
+
+
+$hasilnya = "";
+$hasilnya = "<div id='map-canvas' style='height:320px;margin: 0px;padding: 0px;'>";
+$hasilnya .= "</div>";
+$hasilnya .=   "<script>
+(function($) {
+     function initialize() {
+       var  json = (function () {
+                                                      var json = [];
+                                                      $.ajax({
+                                                          'async': false,
+                                                          'global': false,
+                                                          'url': '/hello/json',
+                                                          'dataType': 'json',
+                                                          'success': function (a) {
+
+                                                          json = a;
+                                                          console.log('success');}
+                                                      });
+                                                      return json;
+                                          })();
+
+
+          var center = new google.maps.LatLng(-2.6367266,118.0148634);
+          var mapOptions = {
+                center: center,
+                zoom: 3,
+                mapTypeId: google.maps.MapTypeId.ROADMAP,
+             };
+        var map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
+
+
+         $.each(json, function(i, v) {
+          latlang = new google.maps.LatLng(+v.field_geolong_contoh);
+          var marker=new google.maps.Marker({
+                position:latlang,
+                icon: 'http://maps.google.com/mapfiles/ms/micons/red-dot.png',
+                map : map,
+                title : 'abcd'
+            });
+
+       marker.setMap(map);
+       });
+
+    }
+
+  google.maps.event.addDomListener(window, 'load', initialize);
+
+
+})(jQuery);
+</script>";
+
+
+return $hasilnya;
+}
